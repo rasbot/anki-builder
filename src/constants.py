@@ -13,7 +13,9 @@ AUDIO_DIR = PROJECT_ROOT / "data" / "audio"
 AUDIO_DIR.mkdir(parents=True, exist_ok=True)
 
 # 4. Files
-CREDENTIALS_FILE = CONFIG_DIR / "google_credentials.json"
+CREDENTIALS_FILE = (
+    "C:\\prog\\google-service-keys\\sincere-destiny-476600-q6-3844f4db997d.json"
+)
 
 # 5. Google Sheets Config
 SHEET_NAME = "Swedish Vocabulary Master"
