@@ -1,16 +1,18 @@
 from pathlib import Path
 
 # 1. Determine the Project Root
-# This file is in src/, so the root is two levels up (parent.parent)
 SRC_DIR = Path(__file__).parent
 PROJECT_ROOT = SRC_DIR.parent
 
 # 2. Key Directories
 CONFIG_DIR = PROJECT_ROOT / "config"
-AUDIO_DIR = PROJECT_ROOT / "data" / "audio"
+DATA_DIR = PROJECT_ROOT / "data"  # Explicit data root
+AUDIO_DIR = DATA_DIR / "audio"
+DECKS_DIR = DATA_DIR / "decks"  # <--- New Directory
 
-# 3. Ensure directories exist (Optional, but helpful safety check)
+# 3. Ensure directories exist
 AUDIO_DIR.mkdir(parents=True, exist_ok=True)
+DECKS_DIR.mkdir(parents=True, exist_ok=True)  # <--- Auto-create
 
 # 4. Files
 CREDENTIALS_FILE = (
