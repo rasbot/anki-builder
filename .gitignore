@@ -6,6 +6,15 @@ __pycache__/
 # C extensions
 *.so
 
+config/
+__pycache__/
+*.pyc
+
+# Ignore generated assets
+data/audio/
+data/decks/
+*.apkg
+
 # Distribution / packaging
 .Python
 build/
