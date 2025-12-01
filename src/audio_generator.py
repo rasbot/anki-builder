@@ -1,7 +1,7 @@
 import os
 from google.cloud import texttospeech
 from google.oauth2 import service_account
-from src.constants import CREDENTIALS_FILE, AUDIO_DIR
+from src.constants import CREDENTIALS_FILE, AUDIO_DIR, ROBOT_VOICE
 
 # Initialize the client ONCE using your shared credentials
 # This works for both Sheets and TTS because they are in the same project/json
@@ -28,9 +28,7 @@ def generate_mp3(text, filename):
 
     # "sv-SE-Wavenet-A" is a high-quality female voice.
     # Try "sv-SE-Wavenet-C" for male.
-    voice = texttospeech.VoiceSelectionParams(
-        language_code="sv-SE", name="sv-SE-Wavenet-A"
-    )
+    voice = texttospeech.VoiceSelectionParams(language_code="sv-SE", name=ROBOT_VOICE)
 
     audio_config = texttospeech.AudioConfig(
         audio_encoding=texttospeech.AudioEncoding.MP3
