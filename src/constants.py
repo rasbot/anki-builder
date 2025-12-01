@@ -28,3 +28,6 @@ MODEL_ID = 1607392319
 # Unique ID for the Deck
 DECK_ID = 2059400110
 DECK_NAME = "Svenska: Vocab & Sentences"
+
+# 7. Robot voice
+ROBOT_VOICE = "sv-SE-Chirp3-HD-Sulafat"
