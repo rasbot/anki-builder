@@ -46,11 +46,32 @@ SWEDISH_MODEL = genanki.Model(
     ],
     templates=[
         {
+            # 1. RECOGNITION CARD (Updated)
             "name": "Recognition (SE -> EN)",
-            "qfmt": '{{AudioWord}}<br><div class="se-word">{{WordSE}}</div>',
-            "afmt": '{{FrontSide}}<hr id=answer><div class="en-word">{{WordEN}}</div><br><div class="sentence-container"><div class="sent-se">{{SentenceSE}} {{AudioSentence}}</div><div class="sent-en">{{SentenceEN}}</div></div>',
+            "qfmt": """
+                {{AudioWord}}
+                <br>
+                <div class="se-word">{{WordSE}}</div>
+                
+                {{#ContextHint}}
+                    <div class="hint" style="font-size: 0.8em; color: #888;">
+                        ({{ContextHint}})
+                    </div>
+                {{/ContextHint}}
+            """,
+            "afmt": """
+                {{FrontSide}}
+                <hr id=answer>
+                <div class="en-word">{{WordEN}}</div>
+                <br>
+                <div class="sentence-container">
+                    <div class="sent-se">{{SentenceSE}} {{AudioSentence}}</div>
+                    <div class="sent-en">{{SentenceEN}}</div>
+                </div>
+            """,
         },
         {
+            # 2. PRODUCTION CARD (Unchanged)
             "name": "Production (EN -> SE)",
             "qfmt": '<div class="en-word">{{WordEN}}</div><br>{{#ContextHint}}<div class="hint">({{ContextHint}})</div>{{/ContextHint}}',
             "afmt": '{{FrontSide}}<hr id=answer><div class="se-word {{Gender}}">{{WordSE}}</div>{{AudioWord}}<br><div class="sentence-container"><div class="sent-se">{{SentenceSE}} {{AudioSentence}}</div></div>',
