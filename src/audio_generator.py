@@ -1,4 +1,3 @@
-import os
 import random
 from google.cloud import texttospeech
 from google.oauth2 import service_account
