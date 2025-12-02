@@ -52,10 +52,10 @@ SWEDISH_MODEL = genanki.Model(
                 {{AudioWord}}
                 <br>
                 <div class="se-word">{{WordSE}}</div>
-                
+
                 {{#ContextHint}}
                     <div class="hint" style="font-size: 0.8em; color: #888;">
-                        ({{ContextHint}})
+                        {{ContextHint}}
                     </div>
                 {{/ContextHint}}
             """,
@@ -73,7 +73,7 @@ SWEDISH_MODEL = genanki.Model(
         {
             # 2. PRODUCTION CARD (Unchanged)
             "name": "Production (EN -> SE)",
-            "qfmt": '<div class="en-word">{{WordEN}}</div><br>{{#ContextHint}}<div class="hint">({{ContextHint}})</div>{{/ContextHint}}',
+            "qfmt": '<div class="en-word">{{WordEN}}</div><br>{{#ContextHint}}<div class="hint">{{ContextHint}}</div>{{/ContextHint}}',
             "afmt": '{{FrontSide}}<hr id=answer><div class="se-word {{Gender}}">{{WordSE}}</div>{{AudioWord}}<br><div class="sentence-container"><div class="sent-se">{{SentenceSE}} {{AudioSentence}}</div></div>',
         },
     ],
