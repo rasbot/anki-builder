@@ -11,8 +11,8 @@ CSS = """
 .en-word { font-size: 28px; color: #555; }
 
 /* Gender Coloring */
-.se-word.en { color: #c0392b; }  /* Red for En-words */
-.se-word.ett { color: #2980b9; } /* Blue for Ett-words */
+.se-word.en { color: #2980b9; }  /* Blue for En-words */
+.se-word.ett { color: #c0392b; } /* Red for Ett-words */
 
 /* The Context Hint */
 .hint { font-size: 18px; color: #888; font-style: italic; margin-top: 10px; }
@@ -25,8 +25,8 @@ CSS = """
 /* Dark Mode Support */
 .nightMode .card { background-color: #2f2f31; color: #d7d7d7; }
 .nightMode .sentence-container { background-color: #3a3a3c; }
-.nightMode .se-word.en { color: #ff6b6b; }
-.nightMode .se-word.ett { color: #54a0ff; }
+.nightMode .se-word.en { color: #54a0ff; }
+.nightMode .se-word.ett { color: #ff6b6b; }
 """
 
 # 2. Define the Card Templates
@@ -46,12 +46,12 @@ SWEDISH_MODEL = genanki.Model(
     ],
     templates=[
         {
-            # 1. RECOGNITION CARD (Updated)
+            # 1. RECOGNITION CARD (SE -> EN)
             "name": "Recognition (SE -> EN)",
             "qfmt": """
                 {{AudioWord}}
                 <br>
-                <div class="se-word">{{WordSE}}</div>
+                <div class="se-word {{Gender}}">{{WordSE}}</div>
                 
                 {{#ContextHint}}
                     <div class="hint" style="font-size: 0.8em; color: #888;">
@@ -71,10 +71,19 @@ SWEDISH_MODEL = genanki.Model(
             """,
         },
         {
-            # 2. PRODUCTION CARD (Unchanged)
+            # 2. PRODUCTION CARD (EN -> SE)
             "name": "Production (EN -> SE)",
             "qfmt": '<div class="en-word">{{WordEN}}</div><br>{{#ContextHint}}<div class="hint">({{ContextHint}})</div>{{/ContextHint}}',
-            "afmt": '{{FrontSide}}<hr id=answer><div class="se-word {{Gender}}">{{WordSE}}</div>{{AudioWord}}<br><div class="sentence-container"><div class="sent-se">{{SentenceSE}} {{AudioSentence}}</div></div>',
+            "afmt": """
+                {{FrontSide}}
+                <hr id=answer>
+                <div class="se-word {{Gender}}">{{WordSE}}</div>
+                {{AudioWord}}
+                <br>
+                <div class="sentence-container">
+                    <div class="sent-se">{{SentenceSE}} {{AudioSentence}}</div>
+                </div>
+            """,
         },
     ],
     css=CSS,
