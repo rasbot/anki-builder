@@ -31,3 +31,21 @@ DECK_NAME = "Svenska: Vocab & Sentences"
 
 # 7. Robot voice
 ROBOT_VOICE = "sv-SE-Chirp3-HD-Sulafat"
+SPEAKING_RATE = 0.9
+CHIRP_VOICES = [
+    "sv-SE-Chirp3-HD-Achernar",
+    "sv-SE-Chirp3-HD-Achird",
+    "sv-SE-Chirp3-HD-Callirrhoe",
+    "sv-SE-Chirp3-HD-Despina",
+    "sv-SE-Chirp3-HD-Kore",
+    "sv-SE-Chirp3-HD-Laomedeia",
+    "sv-SE-Chirp3-HD-Orus",
+    "sv-SE-Chirp3-HD-Puck",
+    "sv-SE-Chirp3-HD-Sulafat",
+    "sv-SE-Chirp3-HD-Zephyr",
+]
+WAVENET_VOICES = [
+    "sv-SE-Wavenet-F",
+    "sv-SE-Wavenet-G",
+]
+SWE_VOICES = CHIRP_VOICES + WAVENET_VOICES

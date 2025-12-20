@@ -55,7 +55,7 @@ SWEDISH_MODEL = genanki.Model(
                 
                 {{#ContextHint}}
                     <div class="hint" style="font-size: 0.8em; color: #888;">
-                        ({{ContextHint}})
+                        {{ContextHint}}
                     </div>
                 {{/ContextHint}}
             """,
