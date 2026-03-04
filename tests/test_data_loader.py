@@ -46,11 +46,7 @@ class TestGetDataFromGoogleSheet:
         sheet = _make_sheet_mock(rows)
         client = _make_client_mock(sheet)
 
-        with (
-            patch("src.data_loader.ServiceAccountCredentials") as mock_creds,
-            patch("src.data_loader.gspread.authorize", return_value=client),
-        ):
-            mock_creds.from_json_keyfile_name.return_value = MagicMock()
+        with patch("src.data_loader._get_gspread_client", return_value=client):
             notes = get_data_from_google_sheet("Swedish Vocabulary Master")
 
         assert len(notes) == 1
@@ -69,11 +65,7 @@ class TestGetDataFromGoogleSheet:
         sheet = _make_sheet_mock(rows)
         client = _make_client_mock(sheet)
 
-        with (
-            patch("src.data_loader.ServiceAccountCredentials") as mock_creds,
-            patch("src.data_loader.gspread.authorize", return_value=client),
-        ):
-            mock_creds.from_json_keyfile_name.return_value = MagicMock()
+        with patch("src.data_loader._get_gspread_client", return_value=client):
             notes = get_data_from_google_sheet()
 
         assert notes == []
@@ -83,11 +75,7 @@ class TestGetDataFromGoogleSheet:
         client = MagicMock()
         client.open.side_effect = gspread.exceptions.SpreadsheetNotFound
 
-        with (
-            patch("src.data_loader.ServiceAccountCredentials") as mock_creds,
-            patch("src.data_loader.gspread.authorize", return_value=client),
-        ):
-            mock_creds.from_json_keyfile_name.return_value = MagicMock()
+        with patch("src.data_loader._get_gspread_client", return_value=client):
             notes = get_data_from_google_sheet("Missing Sheet")
 
         assert notes == []
@@ -97,11 +85,7 @@ class TestGetDataFromGoogleSheet:
         sheet = _make_sheet_mock([])
         client = _make_client_mock(sheet)
 
-        with (
-            patch("src.data_loader.ServiceAccountCredentials") as mock_creds,
-            patch("src.data_loader.gspread.authorize", return_value=client),
-        ):
-            mock_creds.from_json_keyfile_name.return_value = MagicMock()
+        with patch("src.data_loader._get_gspread_client", return_value=client):
             notes = get_data_from_google_sheet()
 
         assert notes == []
@@ -113,11 +97,7 @@ class TestGetDataFromGoogleSheet:
         sheet = _make_sheet_mock(rows)
         client = _make_client_mock(sheet)
 
-        with (
-            patch("src.data_loader.ServiceAccountCredentials") as mock_creds,
-            patch("src.data_loader.gspread.authorize", return_value=client),
-        ):
-            mock_creds.from_json_keyfile_name.return_value = MagicMock()
+        with patch("src.data_loader._get_gspread_client", return_value=client):
             notes = get_data_from_google_sheet()
 
         assert notes[0]["fields"][8] == ""  # AudioSentence

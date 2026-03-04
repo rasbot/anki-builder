@@ -3,9 +3,24 @@
 import hashlib
 
 import gspread
-from oauth2client.service_account import ServiceAccountCredentials
 
 from src.constants import CREDENTIALS_FILE, GUID_HASH_LENGTH, SENT_HASH_LENGTH
+
+__all__ = ["get_data_from_google_sheet"]
+
+_gspread_client: gspread.Client | None = None
+
+
+def _get_gspread_client() -> gspread.Client:
+    """Return the shared gspread client, initialising it on first call.
+
+    Returns:
+        An authenticated :class:`gspread.Client`.
+    """
+    global _gspread_client
+    if _gspread_client is None:
+        _gspread_client = gspread.service_account(filename=str(CREDENTIALS_FILE))
+    return _gspread_client
 
 
 def get_data_from_google_sheet(
@@ -30,14 +45,7 @@ def get_data_from_google_sheet(
         sheet_name = "Swedish Vocabulary Master"
     print(f"Connecting to Google Sheet: {sheet_name}...")
 
-    scope = [
-        "https://spreadsheets.google.com/feeds",
-        "https://www.googleapis.com/auth/drive",
-    ]
-    creds = ServiceAccountCredentials.from_json_keyfile_name(
-        str(CREDENTIALS_FILE), scope
-    )
-    client = gspread.authorize(creds)
+    client = _get_gspread_client()
 
     try:
         sheet = client.open(sheet_name).sheet1
@@ -92,9 +100,9 @@ def get_data_from_google_sheet(
         # 3. SENTENCE Audio Filename
         # Append a sentence hash so "Jag får..." and "Får jag..." get different files.
         if sw_sentence:
-            sent_hash = hashlib.md5(sw_sentence.encode("utf-8")).hexdigest()[
-                :SENT_HASH_LENGTH
-            ]
+            sent_hash = hashlib.md5(
+                sw_sentence.encode("utf-8"), usedforsecurity=False
+            ).hexdigest()[:SENT_HASH_LENGTH]
             audio_sent_file = f"se_sent_{safe_word}_{sent_hash}.mp3"
         else:
             audio_sent_file = ""
