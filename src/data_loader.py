@@ -1,25 +1,56 @@
+"""Google Sheets authentication and vocabulary row parsing."""
+
 import hashlib
+
 import gspread
-from oauth2client.service_account import ServiceAccountCredentials
-from src.constants import CREDENTIALS_FILE, SHEET_NAME
+
+from src.constants import CREDENTIALS_FILE, GUID_HASH_LENGTH, SENT_HASH_LENGTH
+
+__all__ = ["get_data_from_google_sheet"]
+
+_gspread_client: gspread.Client | None = None
 
 
-def get_data_from_google_sheet():
-    print(f"Connecting to Google Sheet: {SHEET_NAME}...")
+def _get_gspread_client() -> gspread.Client:
+    """Return the shared gspread client, initialising it on first call.
 
-    scope = [
-        "https://spreadsheets.google.com/feeds",
-        "https://www.googleapis.com/auth/drive",
-    ]
-    creds = ServiceAccountCredentials.from_json_keyfile_name(
-        str(CREDENTIALS_FILE), scope
-    )
-    client = gspread.authorize(creds)
+    Returns:
+        An authenticated :class:`gspread.Client`.
+    """
+    global _gspread_client
+    if _gspread_client is None:
+        _gspread_client = gspread.service_account(filename=str(CREDENTIALS_FILE))
+    return _gspread_client
+
+
+def get_data_from_google_sheet(
+    sheet_name: str | None = None,
+) -> list[dict[str, object]]:
+    """Fetch vocabulary rows from a Google Sheet and return structured note dicts.
+
+    Authenticates via a service-account JSON key, reads all rows from the first
+    worksheet, and converts each non-empty row into a note dict ready for audio
+    generation and Anki packaging.
+
+    Args:
+        sheet_name: Title of the Google Sheet to open. Defaults to
+            "Swedish Vocabulary Master" when ``None`` or empty.
+
+    Returns:
+        A list of note dicts, each containing ``guid``, ``fields``, and
+        ``meta_audio_gen`` keys.  Returns an empty list when the sheet cannot
+        be opened or contains no data rows.
+    """
+    if not sheet_name:
+        sheet_name = "Swedish Vocabulary Master"
+    print(f"Connecting to Google Sheet: {sheet_name}...")
+
+    client = _get_gspread_client()
 
     try:
-        sheet = client.open(SHEET_NAME).sheet1
+        sheet = client.open(sheet_name).sheet1
         all_rows = sheet.get_all_values()
-    except Exception as e:
+    except (gspread.exceptions.SpreadsheetNotFound, gspread.exceptions.APIError) as e:
         print(f"ERROR: Could not open sheet. {e}")
         return []
 
@@ -30,11 +61,21 @@ def get_data_from_google_sheet():
     header_map = {name: index for index, name in enumerate(headers) if name}
 
     data_rows = all_rows[1:]
-    notes = []
+    notes: list[dict[str, object]] = []
 
     print(f"Fetched {len(data_rows)} rows. Processing...")
 
-    def get_val(row_list, col_name):
+    def get_val(row_list: list[str], col_name: str) -> str:
+        """Return the stripped cell value for *col_name* in *row_list*.
+
+        Args:
+            row_list: A single data row from the worksheet.
+            col_name: The header name to look up.
+
+        Returns:
+            The stripped string value, or ``""`` if the column is absent or the
+            row is too short.
+        """
         idx = header_map.get(col_name)
         if idx is None or idx >= len(row_list):
             return ""
@@ -53,25 +94,30 @@ def get_data_from_google_sheet():
         safe_word = "".join([c for c in sw_word if c.isalnum()])
 
         # 2. WORD Audio Filename
-        # For homonyms (får vs får), the WORD sounds the same, so they can share this file.
+        # Homonyms (e.g. "får" vs "får") sound the same, so they share this file.
         audio_word_file = f"se_{safe_word}.mp3"
 
-        # 3. SENTENCE Audio Filename (THE FIX)
-        # We append a hash of the sentence itself so "Jag får..." and "Får jag..." get different files.
+        # 3. SENTENCE Audio Filename
+        # Append a sentence hash so "Jag får..." and "Får jag..." get different files.
         if sw_sentence:
-            sent_hash = hashlib.md5(sw_sentence.encode("utf-8")).hexdigest()[:6]
+            sent_hash = hashlib.md5(
+                sw_sentence.encode("utf-8"), usedforsecurity=False
+            ).hexdigest()[:SENT_HASH_LENGTH]
             audio_sent_file = f"se_sent_{safe_word}_{sent_hash}.mp3"
         else:
-            audio_sent_file = ""  # No audio tag if no sentence
+            audio_sent_file = ""
 
-        # 4. Unique ID Generation (THE FIX)
-        # We add 'context_hint' to the hash so Anki treats the two "får" cards as unique.
+        # 4. Unique ID Generation
+        # Add 'context_hint' to the hash so Anki treats the two "får" cards as unique.
         unique_string = sw_word + pos + context_hint
         note_guid = int(
-            hashlib.sha256(unique_string.encode("utf-8")).hexdigest()[:10], 16
+            hashlib.sha256(unique_string.encode("utf-8")).hexdigest()[
+                :GUID_HASH_LENGTH
+            ],
+            16,
         )
 
-        note = {
+        note: dict[str, object] = {
             "guid": note_guid,
             "fields": [
                 sw_word,

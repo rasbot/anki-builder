@@ -8,9 +8,6 @@ dependencies = [
     "genanki>=0.13.1",
     "google-cloud-texttospeech>=2.33.0",
     "gspread>=6.2.1",
-    "oauth2client>=4.1.3",
-    "openai>=2.8.1",
-    "pydantic>=2.12.5",
 ]
 
 [tool.uv]
@@ -25,15 +22,38 @@ package = true
 requires = ["hatchling>=1.25"]
 build-backend = "hatchling.build"
 
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+    "ruff>=0.15.4",
+]
+
 # Editable installs: add ./src to sys.path so `import constants` works in dev
 [tool.hatch.build]
 dev-mode-dirs = ["src"]
 
-# Wheels/sdist: ship src/constants.py at top-level (no "src." prefix)
+# Wheels/sdist: include all source files under src/
 [tool.hatch.build.targets.wheel]
-only-include = ["src/constants.py"]
+only-include = ["src"]
 sources = ["src"]
 
 [tool.hatch.build.targets.sdist]
-only-include = ["src/constants.py"]
+only-include = ["src"]
 sources = ["src"]
+
+[tool.ruff]
+target-version = "py313"
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "UP", "B", "SIM", "RUF"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["src"]
+
+[tool.ruff.lint.per-file-ignores]
+# CSS and HTML template strings in deck_builder legitimately exceed 88 chars
+"src/deck_builder.py" = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

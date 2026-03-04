@@ -1,9 +1,13 @@
-import genanki
-from src.constants import MODEL_ID, DECK_ID, DECK_NAME, AUDIO_DIR
+"""Anki model definition, CSS, and deck packaging via genanki."""
 
-# 1. Define the "Ideal" Layout
-# This CSS handles the Red/Blue gender coloring and the layout
-CSS = """
+import genanki
+
+from src.constants import AUDIO_DIR, DECK_ID_NAME_DICT, MODEL_ID
+
+__all__ = ["CSS", "SWEDISH_MODEL", "build_anki_deck"]
+
+# 1. Define the CSS for gender coloring and layout
+CSS: str = """
 .card { font-family: arial; font-size: 20px; text-align: center; color: black; background-color: white; }
 
 /* Main Words */
@@ -52,7 +56,7 @@ SWEDISH_MODEL = genanki.Model(
                 {{AudioWord}}
                 <br>
                 <div class="se-word {{Gender}}">{{WordSE}}</div>
-                
+
                 {{#ContextHint}}
                     <div class="hint" style="font-size: 0.8em; color: #888;">
                         {{ContextHint}}
@@ -90,17 +94,41 @@ SWEDISH_MODEL = genanki.Model(
 )
 
 
-def build_anki_deck(notes, output_file="swedish_deck.apkg"):
+def build_anki_deck(
+    notes: list[dict[str, object]],
+    output_file: str = "swedish_deck.apkg",
+    sheet_name: str | None = None,
+) -> None:
+    """Build an Anki ``.apkg`` package from a list of note dicts.
+
+    Creates a :class:`genanki.Deck` using the deck ID and name looked up from
+    :data:`~src.constants.DECK_ID_NAME_DICT`, adds all notes, attaches any
+    existing audio files, and writes the package to *output_file*.
+
+    Args:
+        notes: List of note dicts as returned by
+            :func:`~src.data_loader.get_data_from_google_sheet`.
+        output_file: Destination path for the ``.apkg`` file.
+        sheet_name: Google Sheet title used to look up the deck ID and name.
+            Must be a key in :data:`~src.constants.DECK_ID_NAME_DICT`.
+
+    Raises:
+        ValueError: If *sheet_name* is ``None`` or empty.
+        KeyError: If *sheet_name* is not found in ``DECK_ID_NAME_DICT``.
+    """
     print(f"--- Building Deck with {len(notes)} notes ---")
 
-    # Create the Deck object
-    deck = genanki.Deck(DECK_ID, DECK_NAME)
+    if not sheet_name:
+        raise ValueError("No sheet name passed!")
+    deck_dict = DECK_ID_NAME_DICT[sheet_name]
+    deck_id = int(deck_dict["deck_id"])
+    deck_name = str(deck_dict["deck_name"])
+    deck = genanki.Deck(deck_id, deck_name)
 
-    media_files = []
+    media_files: list[str] = []
 
     for note_data in notes:
         # 1. Create the Note
-        # We assume note_data['fields'] is already sorted correctly from data_loader
         note = genanki.Note(
             model=SWEDISH_MODEL, fields=note_data["fields"], guid=note_data["guid"]
         )
@@ -110,11 +138,11 @@ def build_anki_deck(notes, output_file="swedish_deck.apkg"):
         # genanki needs the FULL PATH to the file on disk to include it in the package
         meta = note_data["meta_audio_gen"]
 
-        word_audio_path = AUDIO_DIR / meta["word_file"]
+        word_audio_path = AUDIO_DIR / str(meta["word_file"])
         if word_audio_path.exists():
             media_files.append(str(word_audio_path))
 
-        sent_audio_path = AUDIO_DIR / meta["sent_file"]
+        sent_audio_path = AUDIO_DIR / str(meta["sent_file"])
         if sent_audio_path.exists():
             media_files.append(str(sent_audio_path))
 

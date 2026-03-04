@@ -12,7 +12,6 @@ This tool solves the "Ambiguity Problem" in language learning (e.g., distinguish
     * **Recognition (SE -> EN):** Hear the Swedish word and see the Swedish text.
     * **Production (EN -> SE):** See English plus *Context Hints* (e.g., "ett-word"), then type or say the Swedish.
 * **Visual Grammar:** Auto-colors Swedish words based on gender (Red for `en`, Blue for `ett`) using custom Anki CSS.
-* **AI Enrichment:** Automatically fills missing sentences, gender, and grammar hints using OpenAI.
 
 ## Project Structure
 
@@ -27,8 +26,7 @@ This tool solves the "Ambiguity Problem" in language learning (e.g., distinguish
     │   ├── constants.py              # Paths and Configuration
     │   ├── data_loader.py            # Google Sheets logic
     │   ├── audio_generator.py        # Google TTS logic
-    │   ├── deck_builder.py           # Genanki / HTML / CSS logic
-    │   └── enricher.py               # OpenAI enrichment logic
+    │   └── deck_builder.py           # Genanki / HTML / CSS logic
     ├── main.py                       # Entry point
     └── README.md
 
@@ -53,11 +51,7 @@ Run the following to install required libraries:
 4.  Rename the key to `google_credentials.json` and place it in the `config/` directory.
 5.  Open your Google Sheet and **Share** it with the `client_email` address found inside the JSON file (set as Editor).
 
-### 3. OpenAI Setup (Optional)
-1.  Obtain an API Key from the OpenAI platform.
-2.  Paste the key directly into a file named `config/openai_key.txt`.
-
-### 4. Google Sheet Structure
+### 3. Google Sheet Structure
 Your Google Sheet must have the following headers in Row 1. The order does not matter, and empty columns to the right are ignored.
 
 | Header | Description | Example |
@@ -78,9 +72,8 @@ To sync data, generate missing audio, and build the deck:
     uv run main.py
 
 The script performs the following operations:
-1.  **AI Check:** Scans the sheet for rows with a word but no sentence. Calls OpenAI to fill in missing columns.
-2.  **Audio Check:** Scans `data/audio/` and generates MP3s for any missing words or sentences via Google TTS.
-3.  **Build:** Packages the data and media into `data/decks/swedish_vocab_master.apkg`.
+1.  **Audio Check:** Scans `data/audio/` and generates MP3s for any missing words or sentences via Google TTS.
+2.  **Build:** Packages the data and media into `data/decks/swedish_vocab_master.apkg`.
 
 ### Importing to Anki
 1.  Open Anki on your desktop.
