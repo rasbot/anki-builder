@@ -25,6 +25,12 @@ package = true
 requires = ["hatchling>=1.25"]
 build-backend = "hatchling.build"
 
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+    "ruff>=0.15.4",
+]
+
 # Editable installs: add ./src to sys.path so `import constants` works in dev
 [tool.hatch.build]
 dev-mode-dirs = ["src"]
@@ -37,3 +43,20 @@ sources = ["src"]
 [tool.hatch.build.targets.sdist]
 only-include = ["src/constants.py"]
 sources = ["src"]
+
+[tool.ruff]
+target-version = "py313"
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "UP", "B", "SIM", "RUF"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["src"]
+
+[tool.ruff.lint.per-file-ignores]
+# CSS and HTML template strings in deck_builder legitimately exceed 88 chars
+"src/deck_builder.py" = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
