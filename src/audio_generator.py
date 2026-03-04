@@ -7,6 +7,8 @@ from google.oauth2 import service_account
 
 import src.constants as c
 
+__all__ = ["generate_mp3", "get_voice", "process_audio_for_notes"]
+
 _client: texttospeech.TextToSpeechClient | None = None
 
 

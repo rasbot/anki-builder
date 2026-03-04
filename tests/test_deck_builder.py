@@ -7,7 +7,7 @@ import pytest
 from src.deck_builder import build_anki_deck
 
 
-def _make_note(sw_word: str = "huset") -> dict:
+def _make_note(sw_word: str = "huset") -> dict[str, object]:
     """Return a minimal note dict suitable for build_anki_deck."""
     return {
         "guid": 123456789,

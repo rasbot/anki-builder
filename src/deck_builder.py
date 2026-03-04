@@ -4,6 +4,8 @@ import genanki
 
 from src.constants import AUDIO_DIR, DECK_ID_NAME_DICT, MODEL_ID
 
+__all__ = ["CSS", "SWEDISH_MODEL", "build_anki_deck"]
+
 # 1. Define the CSS for gender coloring and layout
 CSS: str = """
 .card { font-family: arial; font-size: 20px; text-align: center; color: black; background-color: white; }
@@ -119,8 +121,8 @@ def build_anki_deck(
     if not sheet_name:
         raise ValueError("No sheet name passed!")
     deck_dict = DECK_ID_NAME_DICT[sheet_name]
-    deck_id = deck_dict["deck_id"]
-    deck_name = deck_dict["deck_name"]
+    deck_id = int(deck_dict["deck_id"])
+    deck_name = str(deck_dict["deck_name"])
     deck = genanki.Deck(deck_id, deck_name)
 
     media_files: list[str] = []
