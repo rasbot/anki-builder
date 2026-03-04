@@ -2,6 +2,25 @@
 
 from pathlib import Path
 
+__all__ = [
+    "AUDIO_DIR",
+    "CHIRP_VOICES",
+    "CONFIG_DIR",
+    "CREDENTIALS_FILE",
+    "DATA_DIR",
+    "DECKS_DIR",
+    "DECK_ID_NAME_DICT",
+    "GUID_HASH_LENGTH",
+    "MODEL_ID",
+    "PROJECT_ROOT",
+    "SENT_HASH_LENGTH",
+    "SPEAKING_RATE",
+    "SRC_DIR",
+    "SWE_VOICES",
+    "WAVENET_VOICES",
+    "ensure_dirs",
+]
+
 # 1. Determine the Project Root
 SRC_DIR: Path = Path(__file__).parent
 PROJECT_ROOT: Path = SRC_DIR.parent
@@ -12,14 +31,10 @@ DATA_DIR: Path = PROJECT_ROOT / "data"
 AUDIO_DIR: Path = DATA_DIR / "audio"
 DECKS_DIR: Path = DATA_DIR / "decks"
 
-# 3. Ensure directories exist
-AUDIO_DIR.mkdir(parents=True, exist_ok=True)
-DECKS_DIR.mkdir(parents=True, exist_ok=True)
-
-# 4. Files
+# 3. Files
 CREDENTIALS_FILE: Path = CONFIG_DIR / "google_credentials.json"
 
-# 5. Anki Configuration
+# 4. Anki Configuration
 # Unique ID for the Model (Generated once, keep constant to allow updates)
 MODEL_ID: int = 1607392319
 # Unique ID for the Decks
@@ -35,12 +50,11 @@ DECK_ID_NAME_DICT: dict[str, dict[str, str | int]] = {
     },
 }
 
-# 6. Audio hash lengths for filename generation
+# 5. Audio hash lengths for filename generation
 SENT_HASH_LENGTH: int = 6
 GUID_HASH_LENGTH: int = 10
 
-# 7. Robot voice
-ROBOT_VOICE: str = "sv-SE-Chirp3-HD-Sulafat"
+# 6. TTS voices
 SPEAKING_RATE: float = 0.9
 CHIRP_VOICES: list[str] = [
     "sv-SE-Chirp3-HD-Achernar",
@@ -59,3 +73,9 @@ WAVENET_VOICES: list[str] = [
     "sv-SE-Wavenet-G",
 ]
 SWE_VOICES: list[str] = CHIRP_VOICES + WAVENET_VOICES
+
+
+def ensure_dirs() -> None:
+    """Create the audio and decks output directories if they do not exist."""
+    AUDIO_DIR.mkdir(parents=True, exist_ok=True)
+    DECKS_DIR.mkdir(parents=True, exist_ok=True)
